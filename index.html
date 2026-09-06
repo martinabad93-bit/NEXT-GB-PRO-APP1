@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Next GB Auto Import - Elite Mobile V8</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+:root {
+    --bg-body: #070a10;
+    --bg-card: #0e131d;
+    --bg-card-2: #121925;
+    --bg-elevated: #171f2d;
+    --text-main: #f7f9fc;
+    --text-soft: #c4ccda;
+    --text-muted: #8591a5;
+    --accent: #3b82f6;
+    --accent-2: #60a5fa;
+    --accent-glow: rgba(59, 130, 246, 0.18);
+    --border-color: rgba(255,255,255,.08);
+    --border-strong: rgba(255,255,255,.14);
+    --input-bg: #0b111a;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --wa: #25D366;
+    --radius-card: 20px;
+    --radius-input: 14px;
+    --nav-height: 68px;
+}
+
+.light-mode {
+    --bg-body: #f1f5f9;
+    --bg-card: #ffffff;
+    --bg-card-2: #f8fafc;
+    --bg-elevated: #ffffff;
+    --text-main: #0f172a;
+    --text-soft: #334155;
+    --text-muted: #64748b;
+    --accent: #2563eb;
+    --accent-2: #3b82f6;
+    --accent-glow: rgba(37,99,235,.10);
+    --border-color: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --input-bg: #f8fafc;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(--text-main); -webkit-font-smoothing: antialiased; }
+
+body { padding-bottom: calc(var(--nav-height) + 20px); }
+
+/* TOP BAR MOBILE MOBILE-OPTIMIZED */
+.mobile-top-bar {
+    position: sticky; top: 0; z-index: 90;
+    background: rgba(7, 10, 16, 0.85);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.light-mode .mobile-top-bar { background: rgba(241, 245, 249, 0.88); }
+
+.brand-badge { display: flex; align-items: center; gap: 10px; }
+.brand-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), #1d4ed8);
+    display: grid; place-items: center; color: #fff; font-weight: 900; font-size: 15px;
+    box-shadow: 0 6px 16px rgba(37,99,235,.3);
+}
+.brand-title strong { display: block; font-size: 14px; font-weight: 800; line-height: 1.1; }
+.brand-title span { font-size: 9px; color: var(--accent-2); font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+
+.top-actions-cluster { display: flex; gap: 6px; }
+.btn-icon-top {
+    width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border-color);
+    background: var(--bg-card); color: var(--text-soft); font-size: 15px;
+    display: grid; place-items: center; cursor: pointer; transition: background .2s;
+}
+
+/* CONTAINER & PANELS */
+.mobile-shell { padding: 16px 14px; max-width: 600px; margin: 0 auto; }
+
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-card);
+    padding: 20px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+
+.section-head { margin-bottom: 16px; }
+.section-head .kicker { color: var(--accent-2); font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+.section-head h2 { margin: 4px 0 0; font-size: 20px; font-weight: 850; letter-spacing: -.5px; }
+
+/* INPUT OPTIMIZATIONS FOR TOUCH */
+.input-group { margin-bottom: 14px; }
+label { display: block; font-size: 11px; font-weight: 750; color: var(--text-soft); margin-bottom: 6px; }
+input, select {
+    width: 100%; min-height: 48px; padding: 0 14px;
+    background: var(--input-bg); border: 1px solid var(--border-color);
+    border-radius: var(--radius-input); color: var(--text-main);
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
+    font-family: inherit; font-weight: 600; outline: none;
+}
+input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+.field-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* AUCTION SELECTOR */
+.auction-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.btn-toggle {
+    min-height: 46px; border-radius: var(--radius-input); border: 1px solid var(--border-color);
+    background: var(--bg-card-2); color: var(--text-soft); font-weight: 800; font-size: 12px;
+    cursor: pointer; transition: all .2s;
+}
+.btn-toggle.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 6px 18px rgba(37,99,235,.25); }
+
+/* VIN API SEARCH BAR MOBILE */
+.vin-box { display: flex; gap: 6px; }
+.vin-box input { flex: 1; text-transform: uppercase; font-size: 14px !important; letter-spacing: 1px; }
+.vin-box button {
+    width: 48px; min-width: 48px; height: 48px; border-radius: var(--radius-input);
+    border: none; background: var(--accent); color: #fff; font-size: 16px; cursor: pointer;
+}
+
+/* BUTTONS */
+.btn-primary-mobile {
+    width: 100%; min-height: 52px; border-radius: var(--radius-input); border: none;
+    background: linear-gradient(135deg, var(--accent), #1d4ed8); color: #fff;
+    font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; gap: 8px; box-shadow: 0 8px 20px rgba(37,99,235,.28);
+    margin-top: 10px;
+}
+.btn-success-mobile { background: linear-gradient(135deg, var(--success), #15803d); box-shadow: 0 8px 20px rgba(34,197,94,.25); }
+.btn-wa-mobile { background: var(--wa); color: #fff; border: none; font-weight: 800; }
+
+/* SUMMARY & DISPLAY CARDS */
+.res-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: 12px; color: var(--text-soft);
+}
+.res-row strong { color: var(--text-main); font-size: 13px; font-weight: 800; }
+.res-row.highlight { background: rgba(59,130,246,.08); padding: 12px; border-radius: 10px; border-bottom: none; margin: 8px 0; }
+.res-row.highlight span { font-weight: 800; color: var(--text-main); }
+.res-row.highlight strong { color: var(--accent-2); font-size: 15px; }
+
+.total-card-mobile {
+    background: linear-gradient(145deg, #2563eb, #1e3a8a); color: #fff;
+    border-radius: 16px; padding: 18px; margin-top: 14px; text-align: left;
+}
+.total-card-mobile small { text-transform: uppercase; font-size: 9px; font-weight: 800; opacity: .8; letter-spacing: 1px; display: block; margin-bottom: 4px; }
+.total-card-mobile h3 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -.8px; }
+
+/* BOTTOM NAVIGATION BAR (APP STYLE) */
+.mobile-bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height);
+    background: rgba(14, 19, 29, 0.92);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-strong); z-index: 1000;
+    display: grid; grid-template-columns: repeat(4, 1fr); padding: 4px 6px;
+}
+.light-mode .mobile-bottom-nav { background: rgba(255, 255, 255, 0.94); }
+
+.nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--text-muted); background: none; border: none; font-size: 10px; font-weight: 800;
+    gap: 3px; cursor: pointer; transition: color .2s; padding: 0;
+}
+.nav-item .icon { font-size: 18px; line-height: 1; }
+.nav-item.active { color: var(--accent-2); }
+
+/* FLOATING OVERLAY MENU FOR EXTRA OPTIONS */
+.mobile-menu-drawer {
+    position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+    display: none; align-items: flex-end;
+}
+.mobile-menu-drawer.open { display: flex; }
+.drawer-content {
+    background: var(--bg-card); width: 100%; border-radius: 24px 24px 0 0;
+    padding: 20px 18px 30px; border-top: 1px solid var(--border-strong);
+    animation: slideUp .25s ease-out;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* CRONOGRAMA MOBILE SPECIFIC */
+.cronograma-card { border-top: 2px dashed var(--accent); margin-top: 16px; padding-top: 16px; }
+.c-step { background: var(--bg-card-2); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
+.c-step-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.c-step-head span { font-size: 11px; font-weight: 800; color: var(--accent-2); }
+.c-step-head strong { font-size: 13px; font-weight: 800; color: var(--text-main); }
+.c-step p { margin: 0; font-size: 10px; color: var(--text-muted); line-height: 1.3; }
+
+/* TOAST */
+#toast-mobile {
+    position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border-strong);
+    padding: 10px 16px; border-radius: 30px; font-size: 11px; font-weight: 800;
+    box-shadow: 0 10px 25px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: all .3s; z-index: 3000;
+}
+#toast-mobile.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* TAB DISPLAY LOGIC */
+.m-tab-panel { display: none; }
+.m-tab-panel.active { display: block; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<div id="toast-mobile"></div>
+
+<!-- HEADER MÓVIL FIJO -->
+<header class="mobile-top-bar">
+    <div class="brand-badge">
+        <div class="brand-icon">NG</div>
+        <div class="brand-title">
+            <strong>NEXT GB AUTO</strong>
+            <span>ELITE MOBILE V8</span>
+        </div>
+    </div>
+    <div class="top-actions-cluster">
+        <button class="btn-icon-top" onclick="toggleTheme()" title="Cambiar Tema">☾</button>
+        <button class="btn-icon-top" onclick="toggleDrawer(true)" title="Opciones">⚙️</button>
+    </div>
+</header>
+
+<!-- CONTENIDO PRINCIPAL RESTRUCTURADO PARA MÓVIL -->
+<main class="mobile-shell">
+
+    <!-- TAB 1: SUBASTAS -->
+    <section id="m-tab-subasta" class="m-tab-panel active">
+        <div class="card">
+            <div class="section-head">
+                <span class="kicker">Paso 01 · Adquisición</span>
+                <h2>Subasta & Fees USA</h2>
+            </div>
+
+            <div class="auction-toggle">
+                <button id="m-btn-iaai" class="btn-toggle active" onclick="setAuctionPlatform('iaai')">IAAI</button>
+                <button id="m-btn-copart" class="btn-toggle" onclick="setAuctionPlatform('copart')">COPART</button>
+            </div>
+
+            <div class="input-group">
+                <label>Oferta / Bid Subasta (USD $)</label>
+                <input type="number" id="auction_bid" placeholder="Ej. 4500" min="0" oninput="calcAuctionFees()">
+            </div>
+
+            <div class="input-group">
+                <label>Modalidad de Puja</label>
+                <select id="auction_type" onchange="calcAuctionFees()">
+                    <option value="live">Subasta en Vivo (Live Bid)</option>
+                    <option value="pre">Pre-Oferta (Kiosk / Pre-Bid)</option>
+                </select>
+            </div>
+
+            <!-- RESULTADOS VISTA RÁPIDA SUBASTA -->
+            <div style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                <div class="res-row"><span>Bid Ofertado:</span><strong id="m_ra_bid">US$ 0.00</strong></div>
+                <div class="res-row"><span>Fees de Subasta:</span><strong id="m_ra_fees" style="color: var(--danger);">US$ 0.00</strong></div>
+                <div class="total-card-mobile">
+                    <small>Subasta Total (FOB)</small>
+                    <h3 id="m_ra_total">US$ 0.00</h3>
+                </div>
+            </div>
+
+            <button class="btn-primary-mobile" onclick="syncAndNext(2)">
+                Continuar a DGA Aduanas ➔
+            </button>
+        </div>
+    </section>
+
+    <!-- TAB 2: ADUANAS / VEHÍCULO -->
+    <section id="m-tab-aduanas" class="m-tab-panel">
+        <div class="card">
+            <div class="section-head">
+                <span class="kicker">Paso 02 · Regulación</span>
+                <h2>Vehículo & Impuestos DGA</h2>
+            </div>
+
+            <div class="input-group">
+                <label>Nombre del Cliente</label>
+                <input type="text" id="cliente" placeholder="Ej. Juan Pérez" oninput="calc()">
+            </div>
+
+            <div class="input-group">
+                <label>VIN / Chasis (NHTSA Auto-fill)</label>
+                <div class="vin-box">
+                    <input type="text" id="vin" placeholder="17 dígitos..." maxlength="17" oninput="calc()">
+                    <button id="m-btn-vin" onclick="decodificarVIN()">🔍</button>
+                </div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Marca</label><select id="marca" onchange="updateModels()"><option value="">Seleccione...</option></select></div>
+                <div class="input-group"><label>Modelo</label><select id="modelo" onchange="updateYears()"><option value="">Seleccione...</option></select></div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Año</label><select id="anio" onchange="updateVersions()"><option value="">Seleccione...</option></select></div>
+                <div class="input-group"><label>Versión (Trim)</label><select id="version" onchange="setAutoPrice()"><option value="">Seleccione...</option></select></div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Valor Tablilla (USD$)</label><input type="number" id="valor" value="0" oninput="updateSeguroYCalc()"></div>
+                <div class="input-group"><label>Tasa Cambiaria DOP</label><input type="number" id="tasa" value="60.60" step="0.01" oninput="calc(); calcCostos();" style="color: var(--success); font-weight:800;"></div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Flete DGA (USD$)</label><input type="number" id="flete" value="910" oninput="calc()"></div>
+                <div class="input-group"><label>Seguro DGA (USD$)</label><input type="number" id="seguro" value="0.00" oninput="calc()"></div>
+            </div>
+
+            <div class="input-group">
+                <label>Tratado de Arancel</label>
+                <select id="tratado" onchange="calc()">
+                    <option value="0">Con Tratado (0% Gravamen)</option>
+                    <option value="0.10" selected>Sin Tratado (10% Gravamen)</option>
+                </select>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>País de Origen</label><input type="text" id="pais_origen" value="--" readonly></div>
+                <div class="input-group"><label>Estado Base de Datos</label><div id="db-status" class="db-status-mobile">⏳ Cargando...</div></div>
+            </div>
+
+            <div id="specs-card" class="specs-card-mobile">
+                <h4>Especificaciones</h4>
+                <div id="specs-content" class="specs-grid-mobile"></div>
+            </div>
+
+            <div class="input-group">
+                <label>Gastos Adicionales DGA (RD$)</label>
+                <input type="number" id="gastos_adicionales_dga" value="0" oninput="calc()">
+            </div>
+
+            <!-- RESUMEN LIQUIDACIÓN DGA -->
+            <div style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                <div class="res-row"><span>Arancel & ITBIS:</span><strong id="m_rArancelItbis">RD$ 0.00</strong></div>
+                <div class="res-row"><span>Despacho Aduana (Sin Placa):</span><strong id="m_rDespachoSinPlaca">RD$ 0.00</strong></div>
+                <div class="res-row"><span>Placa & Marbete (17% + CO2):</span><strong id="m_rSubPlaca">RD$ 0.00</strong></div>
+                <div class="total-card-mobile" style="background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid var(--border-strong);">
+                    <small>Total DGA Estimado</small>
+                    <h3 id="m_rTotalDGA">RD$ 0.00</h3>
+                </div>
+            </div>
+
+            <button class="btn-primary-mobile" onclick="syncAndNext(3)">
+                Continuar a Inversión Total ➔
+            </button>
+        </div>
+    </section>
+
+    <!-- TAB 3: INVERSIÓN TOTAL Y RENTABILIDAD -->
+    <section id="m-tab-costos" class="m-tab-panel">
+        <div class="card">
+            <div class="section-head">
+                <span class="kicker">Paso 03 · Rentabilidad</span>
+                <h2>Inversión & Retorno</h2>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Subasta (USD$)</label><input type="number" id="costo_subasta" value="0" oninput="calcCostos()"></div>
+                <div class="input-group"><label>Fees Subasta (USD$)</label><input type="number" id="fees_subasta" value="0" oninput="calcCostos()"></div>
+            </div>
+
+            <div class="input-group">
+                <label>Grúa Inland USA (Zip ➔ Miami)</label>
+                <div class="vin-box">
+                    <input type="text" id="zip_origen" placeholder="ZIP Subasta..." style="flex:0.4;">
+                    <input type="number" id="grua_inland" value="0" oninput="calcCostos()" style="flex:0.6;">
+                    <button id="m-btn-grua" onclick="calcularFleteORS()">📍</button>
+                </div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Flete Marítimo (USD$)</label><input type="number" id="flete_real" value="910" oninput="calcCostos()"></div>
+                <div class="input-group"><label>Documentación (USD$)</label><input type="number" id="documentacion_usd" value="0" oninput="calcCostos()"></div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Taller Miami (USD$)</label><input type="number" id="taller_miami_usd" value="0" oninput="calcCostos()"></div>
+                <div class="input-group"><label>Fee Broker (USD$)</label><input type="number" id="fee_broker_usd" value="0" oninput="calcCostos()"></div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Honorarios Dealer (USD$)</label><input type="number" id="derecho_dealer_usd" value="0" oninput="calcCostos()"></div>
+                <div class="input-group"><label>Reparación RD (RD$)</label><input type="number" id="reparaciones_rds" value="0" oninput="calcCostos()"></div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group"><label>Despacho DGA (RD$)</label><input type="number" id="c_despacho_rds" value="0" oninput="calcCostos()"></div>
+                <div class="input-group"><label>Placa & Marbete (RD$)</label><input type="number" id="c_placa_rds" value="0" oninput="calcCostos()"></div>
+            </div>
+
+            <div class="field-grid-2">
+                <div class="input-group">
+                    <label style="color:var(--success);">🎯 Precio Venta (USD$)</label>
+                    <input type="number" id="precio_venta_estimado_usd" value="0" oninput="calcCostos()" style="border-color:var(--success); color:var(--success);">
+                </div>
+                <div class="input-group">
+                    <label>Depósito Inicial (USD$)</label>
+                    <input type="number" id="pago_inicial_usd" value="2000" oninput="calcCostos()">
+                </div>
+            </div>
+
+            <!-- RESULTADOS LANDED & MARGEN -->
+            <div style="margin-top: 14px;">
+                <div class="res-row highlight">
+                    <span>Fee Broker & Honorarios Total:</span>
+                    <strong id="m_lbl_broker_honorarios">US$ 0.00</strong>
+                </div>
+                <div class="res-row"><span>Total Gastos Origen (USA):</span><strong id="m_rc_origen">US$ 0.00</strong></div>
+                <div class="res-row"><span>Total Destino Local (RD):</span><strong id="m_rc_destino">RD$ 0.00</strong></div>
+
+                <div class="total-card-mobile" style="background: linear-gradient(145deg, #16a34a, #14532d); margin-top: 14px;">
+                    <small>Costo Total Final (Landed Cost)</small>
+                    <h3 id="m_rc_landed">US$ 0.00</h3>
+                </div>
+
+                <div class="total-card-mobile" style="background: linear-gradient(145deg, #0284c7, #0369a1); margin-top: 10px;">
+                    <small>Ganancia Estimada (Margen)</small>
+                    <h3 id="m_rc_margen">US$ 0.00</h3>
+                </div>
+            </div>
+
+            <button class="btn-primary-mobile btn-success-mobile" onclick="switchTab('resumen')">
+                Ver Hoja de Resumen Completa 📄
+            </button>
+        </div>
+    </section>
+
+    <!-- TAB 4: HOJA DE RESUMEN / PROFORMA / PDF -->
+    <section id="m-tab-resumen" class="m-tab-panel">
+        <div class="card" id="m-printable-area">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div class="brand-badge">
+                    <div class="brand-icon">NG</div>
+                    <div class="brand-title"><strong>NEXT GB AUTO</strong><span>IMPORT SRL</span></div>
+                </div>
+                <select id="doc_type" style="width: auto; min-height: 38px; font-size: 12px !important;" onchange="toggleDocType()">
+                    <option value="cotizacion">📄 Cotización</option>
+                    <option value="proforma">🤝 Factura Proforma</option>
+                </select>
+            </div>
+
+            <div style="background: var(--bg-card-2); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 14px; border: 1px solid var(--border-color);">
+                <div><strong>Cliente:</strong> <span id="m_lbl_cliente">--</span></div>
+                <div><strong>Vehículo:</strong> <span id="m_lbl_vehiculo">POR ESPECIFICAR</span></div>
+                <div><strong>VIN / Chasis:</strong> <span id="m_lbl_vin">--</span></div>
+                <div><strong>Tasa Dólar:</strong> RD$ <span id="m_lbl_tasa">60.60</span></div>
+            </div>
+
+            <!-- DESGLOSE UNIFICADO SEGÚN REQUERIMIENTO -->
+            <div id="m-desglose-standard">
+                <div class="section-head"><h2 style="font-size: 16px;">Resumen Inversión</h2></div>
+                <div class="res-row"><span>Subasta & Fees:</span><strong id="m_res_subasta">US$ 0.00</strong></div>
+                <div class="res-row"><span>Grúa Inland:</span><strong id="m_res_inland">US$ 0.00</strong></div>
+                <div class="res-row"><span>Documentación & Taller:</span><strong id="m_res_docs">US$ 0.00</strong></div>
+                <!-- UNIFICADO: FEE BROKER & HONORARIOS -->
+                <div class="res-row highlight">
+                    <span>Fee Broker & Honorarios:</span>
+                    <strong id="m_res_broker_honorarios_total">US$ 0.00</strong>
+                </div>
+                <div class="res-row"><span>Flete Marítimo:</span><strong id="m_res_flete">US$ 0.00</strong></div>
+                <div class="res-row"><span>Aduana & Placa (RD$):</span><strong id="m_res_aduana_rd">RD$ 0.00</strong></div>
+                
+                <div class="total-card-mobile" style="margin-top: 14px;">
+                    <small>Costo Total (Landed Cost)</small>
+                    <h3 id="m_res_landed_total">US$ 0.00</h3>
+                </div>
+            </div>
+
+            <!-- CRONOGRAMA DE PAGOS PROFORMA (REQUERIMIENTO V8) -->
+            <div id="m-cronograma-proforma" style="display: none;">
+                <div class="section-head"><h2 style="font-size: 16px; color: var(--accent-2);">Cronograma de Pagos</h2></div>
+                
+                <div class="c-step">
+                    <div class="c-step-head"><span>1. Depósito de Seguridad</span><strong id="m_cro_p1">US$ 0.00</strong></div>
+                    <p>Hoy, para formalizar e iniciar el proceso de subasta.</p>
+                </div>
+
+                <div class="c-step">
+                    <div class="c-step-head"><span>2. Balance Subasta</span><strong id="m_cro_p2">US$ 0.00</strong></div>
+                    <p>Facturas, fees de subastas, fee de broker & honorarios unificados.</p>
+                </div>
+
+                <div class="c-step">
+                    <div class="c-step-head"><span>3. Logística Origen</span><strong id="m_cro_p3">US$ 0.00</strong></div>
+                    <p>Grúa inland, taller (incl. mano de obra y partes) y documentación.</p>
+                </div>
+
+                <div class="c-step">
+                    <div class="c-step-head"><span>4. Aduanas & Flete</span><strong id="m_cro_p4">US$ 0.00</strong></div>
+                    <p>Flete, dealer, agente aduanal, parqueo e impuestos DGA al recibir en puerto.</p>
+                </div>
+
+                <div class="c-step">
+                    <div class="c-step-head"><span>5. Placa & Endoso</span><strong id="m_cro_p5">US$ 0.00</strong></div>
+                    <p>Impuesto DGII placa, normativa 03-20 y gestión de endoso (al vender o entregar).</p>
+                </div>
+
+                <div class="total-card-mobile" style="margin-top: 14px; background: linear-gradient(145deg, #1e3a8a, #0f172a);">
+                    <small>Total Inversión Requerida</small>
+                    <h3 id="m_cro_total">US$ 0.00</h3>
+                </div>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN MÓVIL -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
+                <button class="btn-primary-mobile btn-wa-mobile" onclick="enviarWhatsAppContextual()">
+                    📲 WhatsApp
+                </button>
+                <button class="btn-primary-mobile" style="background: var(--bg-card-2); border: 1px solid var(--border-strong);" onclick="imprimirPDF()">
+                    🖨️ Exportar PDF
+                </button>
+                <button class="btn-primary-mobile" style="grid-column:1/-1; background:var(--bg-card-2); border:1px solid var(--border-strong);" onclick="descargarResumenPNG()">
+                    🖼️ Exportar Imagen Ejecutiva
+                </button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- MENU DESLIZABLE MODAL (SETTINGS & GUARDAR) -->
+<div id="drawer-menu" class="mobile-menu-drawer" onclick="toggleDrawer(false)">
+    <div class="drawer-content" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <strong style="font-size: 15px;">Gestión de Cotizaciones</strong>
+            <button onclick="toggleDrawer(false)" style="background:none; border:none; color:var(--text-soft); font-weight:800; font-size:18px;">✕</button>
+        </div>
+
+        <div class="input-group">
+            <label>Guardadas en Teléfono</label>
+            <select id="select-cotizaciones" onchange="cargarCotizacion(); toggleDrawer(false);">
+                <option value="">📂 Seleccionar cotización...</option>
+            </select>
+        </div>
+
+        <div class="input-group" style="margin-top:14px;">
+            <label>Base de datos de vehículos</label>
+            <input id="csv-file-input" type="file" accept=".csv,text/csv" onchange="cargarCSVManual(event)" style="display:none;">
+            <button class="btn-primary-mobile" type="button" onclick="document.getElementById('csv-file-input').click()" style="margin-top:0;">
+                📂 Cargar CSV desde el teléfono
+            </button>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:7px;line-height:1.35;">
+                Si GitHub no encuentra la base, selecciona aquí el archivo CSV. Quedará guardado en este teléfono para usarlo sin conexión.
+            </div>
+        </div>
+
+        <button class="btn-primary-mobile" onclick="guardarCotizacion(); toggleDrawer(false);" style="margin-bottom: 8px;">
+            💾 Guardar Cotización Actual
+        </button>
+        <button class="btn-primary-mobile" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);" onclick="limpiarCaso(); toggleDrawer(false);">
+            🧹 Nueva Cotización (Limpiar)
+        </button>
+    </div>
+</div>
+
+<!-- BARRA DE NAVEGACIÓN INFERIOR ESTILO APP -->
+<nav class="mobile-bottom-nav">
+    <button class="nav-item active" onclick="switchTab('subasta')">
+        <span class="icon">🔨</span>
+        <span>Subasta</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('aduanas')">
+        <span class="icon">🏢</span>
+        <span>Aduanas</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('costos')">
+        <span class="icon">💰</span>
+        <span>Inversión</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('resumen')">
+        <span class="icon">📊</span>
+        <span>Resumen</span>
+    </button>
+</nav>
+
+<script>
+    let db = {};
+    let currentPlatform = 'iaai';
+    const fmt = n => new Intl.NumberFormat('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}).format(n);
+
+    const urlGitHubCSV = 'Base%20de%20Datos%20Valores%20Vehiculos%202026%20-%202027.csv';
+
+    function decodificarEspecificaciones(t) {
+        const d = {};
+        if (t) t.split('||').forEach(p => { p = p.trim(); if (p) { const i=p.indexOf(':'); if(i!==-1) d[p.substring(0,i).trim().toUpperCase()] = p.substring(i+1).trim(); } });
+        return d;
+    }
+    function parseCSVLine(t, d) {
+        const p=[]; let q=false, c='';
+        for(let i=0;i<t.length;i++){ const ch=t[i]; if(ch==='"') q=!q; else if(ch===d && !q){p.push(c.trim());c='';} else c+=ch; }
+        p.push(c.trim()); return p;
+    }
+    async function cargarCSVDesdeGitHub() {
+        const st=document.getElementById('db-status');
+        if(st){st.innerText='⏳ Conectando a base móvil...'; st.style.color='var(--text-muted)';}
+        try {
+            const r=await fetch(urlGitHubCSV+'?t='+Date.now(),{cache:'no-store'});
+            if(!r.ok) throw new Error('CSV no disponible');
+            const text=await r.text();
+            if(!text || !/marca/i.test(text) || !/modelo/i.test(text)) throw new Error('Contenido CSV inválido');
+            localStorage.setItem('ng_m_csv_data',text);
+            localStorage.setItem('ng_m_csv_source','github');
+            processCSV(text,'github');
+            showToast('Base de datos móvil sincronizada ☁️');
+        } catch(e) {
+            const cached=localStorage.getItem('ng_m_csv_data');
+            if(cached){
+                processCSV(cached,localStorage.getItem('ng_m_csv_source')||'local');
+                if(st){st.innerText='🟡 Activa (respaldo guardado en teléfono)'; st.style.color='var(--accent-2)';}
+                showToast('GitHub no disponible: usando base guardada 📱');
+            } else if(st){
+                st.innerText='🔴 Base no cargada — usa “Cargar CSV desde el teléfono”';
+                st.style.color='var(--danger)';
+            }
+        }
+    }
+
+    function cargarCSVManual(event) {
+        const file = event.target.files && event.target.files[0];
+        if(!file) return;
+        const st=document.getElementById('db-status');
+        if(st){st.innerText='⏳ Leyendo '+file.name+'...'; st.style.color='var(--text-muted)';}
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const text = e.target.result || '';
+            if(!/marca/i.test(text) || !/modelo/i.test(text)){
+                if(st){st.innerText='❌ El archivo no parece ser la base de vehículos'; st.style.color='var(--danger)';}
+                showToast('CSV inválido. Selecciona la base de vehículos.');
+                event.target.value='';
+                return;
+            }
+            try {
+                localStorage.setItem('ng_m_csv_data', text);
+                localStorage.setItem('ng_m_csv_source','manual');
+                localStorage.setItem('ng_m_csv_filename',file.name);
+                processCSV(text,'manual');
+                if(st){st.innerText='🟢 Base manual activa: '+file.name; st.style.color='var(--success)';}
+                showToast('Base cargada desde el teléfono 📱');
+                toggleDrawer(false);
+            } catch(err){
+                console.error(err);
+                if(st){st.innerText='❌ Error procesando el CSV'; st.style.color='var(--danger)';}
+                showToast('No se pudo procesar el CSV.');
+            }
+        };
+        reader.onerror=function(){
+            if(st){st.innerText='❌ No se pudo leer el archivo'; st.style.color='var(--danger)';}
+            showToast('No se pudo leer el archivo.');
+        };
+        reader.readAsText(file,'UTF-8');
+    }
+    function processCSV(text, source='local') {
+        const lines=text.split(/\r?\n/); if(lines.length<2) return;
+        let hi=lines.findIndex(x=>/marca/i.test(x)&&/modelo/i.test(x)); if(hi<0) hi=0;
+        const del=lines[hi].includes(';')?';':','; const head=parseCSVLine(lines[hi],del).map(x=>x.replace(/^\uFEFF/,'').trim().toLowerCase());
+        const idx=(terms)=>head.findIndex(h=>terms.some(t=>h.includes(t)));
+        const iMar=idx(['marca']), iMod=idx(['modelo']), iAni=idx(['año','anio']), iPai=idx(['país','pais']), iVal=idx(['valor']), iEsp=idx(['espec']), iTra=idx(['tracci']);
+        db={}; let count=0;
+        for(let i=hi+1;i<lines.length;i++){ const l=lines[i].trim(); if(!l) continue; const a=parseCSVLine(l,del); const marca=a[iMar],mod=a[iMod],anio=a[iAni]; if(!marca||!mod||!anio) continue;
+            const pais=iPai>=0?(a[iPai]||''):''; const valor=iVal>=0?(parseFloat((a[iVal]||'').replace(/[^0-9.-]+/g,''))||0):0; const espec=iEsp>=0?(a[iEsp]||'').replace(/^\|+|\|+$/g,'').trim():''; const sd=decodificarEspecificaciones(espec);
+            if(!db[marca]) db[marca]={}; if(!db[marca][mod]) db[marca][mod]={}; if(!db[marca][mod][anio]) db[marca][mod][anio]=[];
+            db[marca][mod][anio].push({pais,valor,espec,traccion:iTra>=0?(a[iTra]||sd.TRACCION||''):(sd.TRACCION||''),serie:sd.SERIE||''}); count++;
+        }
+        const st=document.getElementById('db-status'); if(st){st.innerText=(source==='manual' ? `🟢 Manual: ${localStorage.getItem('ng_m_csv_filename')||'CSV del teléfono'} (${count.toLocaleString('en-US')})` : `🟢 GitHub: Activa (${count.toLocaleString('en-US')})`); st.style.color='var(--success)';}
+        const m=document.getElementById('marca'); m.innerHTML='<option value="">Seleccione...</option>'; Object.keys(db).sort().forEach(x=>m.options.add(new Option(x,x)));
+        calc();
+    }
+    function updateModels(){ const m=document.getElementById('marca').value, s=document.getElementById('modelo'); s.innerHTML='<option value="">Seleccione...</option>'; document.getElementById('anio').innerHTML='<option value="">Seleccione...</option>'; document.getElementById('version').innerHTML='<option value="">Seleccione...</option>'; if(db[m]) Object.keys(db[m]).sort().forEach(x=>s.options.add(new Option(x,x))); calc(); }
+    function updateYears(){ const m=document.getElementById('marca').value,mo=document.getElementById('modelo').value,s=document.getElementById('anio'); s.innerHTML='<option value="">Seleccione...</option>'; document.getElementById('version').innerHTML='<option value="">Seleccione...</option>'; if(db[m]?.[mo]) Object.keys(db[m][mo]).sort((a,b)=>b-a).forEach(x=>s.options.add(new Option(x,x))); calc(); }
+    function updateVersions(){ const m=document.getElementById('marca').value,mo=document.getElementById('modelo').value,a=document.getElementById('anio').value,s=document.getElementById('version'); s.innerHTML='<option value="">Seleccione...</option>'; if(db[m]?.[mo]?.[a]){ db[m][mo][a].forEach((v,i)=>s.options.add(new Option((v.serie||v.pais||'BASE')+(v.traccion?` [${v.traccion.toUpperCase()}]`:''),i))); if(db[m][mo][a].length===1){s.selectedIndex=1;setAutoPrice();} } calc(); }
+    function setAutoPrice(){ const m=document.getElementById('marca').value,mo=document.getElementById('modelo').value,a=document.getElementById('anio').value,idx=document.getElementById('version').value; const p=document.getElementById('pais_origen'),t=document.getElementById('tratado'),card=document.getElementById('specs-card'),content=document.getElementById('specs-content');
+        if(db[m]?.[mo]?.[a] && idx!==''){ const it=db[m][mo][a][idx]; document.getElementById('valor').value=it.valor; document.getElementById('seguro').value=(it.valor*.02).toFixed(2); const pais=(it.pais||'--').toUpperCase().trim(); p.value=pais; const usa=['US','ESTADOS UNIDOS','EEUU','EUROPA'].some(x=>pais.includes(x)); t.value=usa?'0':'0.10'; p.style.color=usa?'var(--success)':'var(--text-main)'; const sd=decodificarEspecificaciones(it.espec); content.innerHTML=''; Object.entries(sd).forEach(([k,v])=>{const span=document.createElement('span'); span.style.cssText='background:var(--bg-card);border:1px solid var(--border-color);padding:5px 10px;border-radius:6px;font-size:11px;color:var(--text-main)'; span.innerHTML=`<b>${k}:</b> ${v}`; content.appendChild(span);}); card.style.display=Object.keys(sd).length?'block':'none'; } else card.style.display='none'; calc(); }
+    async function fetchTasaDolar(){ try{const r=await fetch('https://open.er-api.com/v6/latest/USD'); const d=await r.json(); if(d?.rates?.DOP){document.getElementById('tasa').value=d.rates.DOP.toFixed(2);calc();calcCostos();showToast('Tasa Dólar actualizada 💱');}}catch(e){console.log('Usando tasa por defecto');} }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast-mobile');
+        t.innerText = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function switchTab(tabKey) {
+        document.querySelectorAll('.m-tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach((b, i) => {
+            b.classList.toggle('active', ['subasta','aduanas','costos','resumen'][i] === tabKey);
+        });
+        document.getElementById('m-tab-' + tabKey).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleDrawer(open) {
+        document.getElementById('drawer-menu').classList.toggle('open', open);
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        localStorage.setItem('ng_theme_m', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    }
+
+    function setAuctionPlatform(platform) {
+        currentPlatform = platform;
+        document.getElementById('m-btn-iaai').classList.toggle('active', platform === 'iaai');
+        document.getElementById('m-btn-copart').classList.toggle('active', platform === 'copart');
+        calcAuctionFees();
+    }
+
+    function calcAuctionFees() {
+        const bid = parseFloat(document.getElementById('auction_bid').value) || 0;
+        const isLive = document.getElementById('auction_type').value === 'live';
+        let buyerFee = 0, internetFee = 0, gateFee = 0, envFee = 0, titleFee = 0;
+
+        if (currentPlatform === 'iaai') {
+            gateFee = 95.00; envFee = 15.00; titleFee = 20.00;
+            if (bid <= 49.99) buyerFee = 5; else if (bid <= 99.99) buyerFee = 10; else if (bid <= 199.99) buyerFee = 40; else if (bid <= 399.99) buyerFee = 75; else if (bid <= 499.99) buyerFee = 100; else if (bid <= 599.99) buyerFee = 130; else if (bid <= 699.99) buyerFee = 155; else if (bid <= 799.99) buyerFee = 180; else if (bid <= 899.99) buyerFee = 205; else if (bid <= 999.99) buyerFee = 230; else if (bid <= 1199.99) buyerFee = 260; else if (bid <= 1299.99) buyerFee = 290; else if (bid <= 1499.99) buyerFee = 330; else if (bid <= 1999.99) buyerFee = 415; else if (bid <= 2499.99) buyerFee = 465; else if (bid <= 2999.99) buyerFee = 515; else if (bid <= 3499.99) buyerFee = 565; else if (bid <= 3999.99) buyerFee = 615; else if (bid <= 4499.99) buyerFee = 665; else if (bid <= 4999.99) buyerFee = 715; else if (bid <= 6999.99) buyerFee = 770; else if (bid <= 7499.99) buyerFee = 820; else buyerFee = bid * 0.085;
+            if (bid <= 99.99) internetFee = 0; else if (bid <= 499.99) internetFee = isLive ? 45 : 35; else if (bid <= 999.99) internetFee = isLive ? 65 : 55; else if (bid <= 1499.99) internetFee = isLive ? 85 : 75; else if (bid <= 1999.99) internetFee = isLive ? 105 : 95; else if (bid <= 2999.99) internetFee = isLive ? 120 : 110; else if (bid <= 4999.99) internetFee = isLive ? 135 : 125; else internetFee = isLive ? 140 : 129;
+        } else {
+            gateFee = 79.00;
+            if (bid <= 49.99) buyerFee = 5; else if (bid <= 99.99) buyerFee = 15; else if (bid <= 399.99) buyerFee = 60; else if (bid <= 499.99) buyerFee = 85; else if (bid <= 599.99) buyerFee = 115; else if (bid <= 699.99) buyerFee = 140; else if (bid <= 799.99) buyerFee = 165; else if (bid <= 899.99) buyerFee = 190; else if (bid <= 999.99) buyerFee = 215; else if (bid <= 1199.99) buyerFee = 245; else if (bid <= 1299.99) buyerFee = 275; else if (bid <= 1399.99) buyerFee = 295; else if (bid <= 1499.99) buyerFee = 325; else if (bid <= 1599.99) buyerFee = 350; else if (bid <= 1699.99) buyerFee = 370; else if (bid <= 1799.99) buyerFee = 390; else if (bid <= 1999.99) buyerFee = 425; else if (bid <= 2499.99) buyerFee = 475; else if (bid <= 2999.99) buyerFee = 525; else if (bid <= 3499.99) buyerFee = 575; else if (bid <= 3999.99) buyerFee = 625; else if (bid <= 4499.99) buyerFee = 675; else if (bid <= 4999.99) buyerFee = 725; else if (bid <= 6999.99) buyerFee = 775; else if (bid <= 7499.99) buyerFee = 825; else if (bid <= 9999.99) buyerFee = 875; else buyerFee = bid * 0.085;
+            if (bid <= 99.99) internetFee = 0; else if (bid <= 499.99) internetFee = isLive ? 49 : 39; else if (bid <= 999.99) internetFee = isLive ? 69 : 59; else if (bid <= 1499.99) internetFee = isLive ? 89 : 79; else if (bid <= 1999.99) internetFee = isLive ? 99 : 89; else if (bid <= 3999.99) internetFee = isLive ? 119 : 109; else if (bid <= 5999.99) internetFee = isLive ? 129 : 119; else internetFee = isLive ? 149 : 139;
+        }
+
+        const totalFees = buyerFee + internetFee + gateFee + envFee + titleFee;
+        window.currentAuctionBid = bid; window.currentAuctionFees = totalFees;
+
+        document.getElementById('m_ra_bid').innerText = "US$ " + fmt(bid);
+        document.getElementById('m_ra_fees').innerText = "US$ " + fmt(totalFees);
+        document.getElementById('m_ra_total').innerText = "US$ " + fmt(bid + totalFees);
+    }
+
+    function syncAndNext(nextTabStep) {
+        if (nextTabStep === 2) {
+            document.getElementById('costo_subasta').value = window.currentAuctionBid || 0;
+            document.getElementById('fees_subasta').value = window.currentAuctionFees || 0;
+            switchTab('aduanas');
+        } else if (nextTabStep === 3) {
+            switchTab('costos');
+        }
+    }
+
+    function updateSeguroYCalc() {
+        document.getElementById('seguro').value = ((parseFloat(document.getElementById('valor').value)||0)*0.02).toFixed(2);
+        calc();
+    }
+
+    function calc() {
+        const v = parseFloat(document.getElementById('valor').value) || 0;
+        const f = parseFloat(document.getElementById('flete').value) || 0;
+        const s = parseFloat(document.getElementById('seguro').value) || 0;
+        const gAdicionales = parseFloat(document.getElementById('gastos_adicionales_dga').value) || 0;
+        const t = parseFloat(document.getElementById('tasa').value) || 60.60;
+        const pAr = parseFloat(document.getElementById('tratado').value);
+
+        const cifUsd = v + f + s; const cifRds = cifUsd * t;
+        const ar = cifRds * pAr; const it = (cifRds + ar) * 0.18; const subAd = ar + it;
+        const pla = cifRds * 0.17; const co2 = cifRds * 0.02; const subPla = pla + co2 + 3000;
+        const dSin = subAd + 8912.44 + 258.26 + 5713.61 + gAdicionales; 
+        const totalDGA = dSin + subPla;
+        window.currentCif = cifUsd; window.currentSinPlaca = dSin; window.currentPlaca = subPla; window.currentTotal = totalDGA;
+
+        const cli = document.getElementById('cliente').value.trim();
+        const vin = document.getElementById('vin').value.trim();
+        window.currentCliente = cli; window.currentTratado = pAr === 0 ? 'Con Tratado (0%)' : 'Sin Tratado (10%)';
+
+        const sM = document.getElementById('marca'), sMo = document.getElementById('modelo'), sA = document.getElementById('anio'), sV = document.getElementById('version');
+        const tm = sM.options[sM.selectedIndex]?.text, tmo = sMo.options[sMo.selectedIndex]?.text, ta = sA.options[sA.selectedIndex]?.text, tv = sV.options[sV.selectedIndex]?.text;
+        window.currentVehiculo = (tm && tm !== "Seleccione...") ? `${tm} ${tmo!=="Seleccione..."?tmo:""} ${ta!=="Seleccione..."?ta:""} ${tv!=="Seleccione..."&&tv?`(${tv})`:""}`.trim().toUpperCase() : "POR ESPECIFICAR";
+
+        document.getElementById('c_despacho_rds').value = dSin.toFixed(2);
+        document.getElementById('c_placa_rds').value = subPla.toFixed(2);
+
+        document.getElementById('m_rArancelItbis').innerText = "RD$ " + fmt(subAd);
+        document.getElementById('m_rDespachoSinPlaca').innerText = "RD$ " + fmt(dSin);
+        document.getElementById('m_rSubPlaca').innerText = "RD$ " + fmt(subPla);
+        document.getElementById('m_rTotalDGA').innerText = "RD$ " + fmt(totalDGA);
+
+        document.getElementById('m_lbl_cliente').innerText = cli || "--";
+        document.getElementById('m_lbl_vehiculo').innerText = window.currentVehiculo;
+        document.getElementById('m_lbl_vin').innerText = vin || "--";
+        document.getElementById('m_lbl_tasa').innerText = t.toFixed(2);
+
+        calcCostos();
+    }
+
+    function calcCostos() {
+        const subasta = parseFloat(document.getElementById('costo_subasta').value) || 0;
+        const fees = parseFloat(document.getElementById('fees_subasta').value) || 0;
+        const inland = parseFloat(document.getElementById('grua_inland').value) || 0;
+        const flete = parseFloat(document.getElementById('flete_real').value) || 0;
+        const documentacion = parseFloat(document.getElementById('documentacion_usd').value) || 0;
+        const tallerMiami = parseFloat(document.getElementById('taller_miami_usd').value) || 0;
+        const feeBroker = parseFloat(document.getElementById('fee_broker_usd').value) || 0;
+        const dealerUsd = parseFloat(document.getElementById('derecho_dealer_usd').value) || 0;
+
+        const despachoRds = parseFloat(document.getElementById('c_despacho_rds').value) || 0;
+        const placaRds = parseFloat(document.getElementById('c_placa_rds').value) || 0;
+        const reparacionesRds = parseFloat(document.getElementById('reparaciones_rds').value) || 0;
+        const precioVentaUsd = parseFloat(document.getElementById('precio_venta_estimado_usd').value) || 0;
+        const depositoUsd = parseFloat(document.getElementById('pago_inicial_usd').value) || 0;
+        const t = parseFloat(document.getElementById('tasa').value) || 60.60;
+
+        const docsUsd = documentacion + tallerMiami;
+        const brokerHonorariosTotal = feeBroker + dealerUsd; // UNIFICADO
+
+        const totalGastosOrigenUsd = subasta + fees + inland + docsUsd + brokerHonorariosTotal;
+        const totalDestinoRds = despachoRds + placaRds + reparacionesRds;
+        const landedCostUsd = totalGastosOrigenUsd + flete + (totalDestinoRds / t);
+        const margenUsd = precioVentaUsd - landedCostUsd;
+
+        window.c_landed = landedCostUsd;
+        window.c_margen = margenUsd; window.c_venta = precioVentaUsd;
+
+        document.getElementById('m_lbl_broker_honorarios').innerText = "US$ " + fmt(brokerHonorariosTotal);
+        document.getElementById('m_rc_origen').innerText = "US$ " + fmt(totalGastosOrigenUsd);
+        document.getElementById('m_rc_destino').innerText = "RD$ " + fmt(totalDestinoRds);
+        document.getElementById('m_rc_landed').innerText = "US$ " + fmt(landedCostUsd);
+        document.getElementById('m_rc_margen').innerText = "US$ " + fmt(margenUsd);
+
+        // HOJA RESUMEN
+        document.getElementById('m_res_subasta').innerText = "US$ " + fmt(subasta + fees);
+        document.getElementById('m_res_inland').innerText = "US$ " + fmt(inland);
+        document.getElementById('m_res_docs').innerText = "US$ " + fmt(docsUsd);
+        document.getElementById('m_res_broker_honorarios_total').innerText = "US$ " + fmt(brokerHonorariosTotal);
+        document.getElementById('m_res_flete').innerText = "US$ " + fmt(flete);
+        document.getElementById('m_res_aduana_rd').innerText = "RD$ " + fmt(despachoRds + placaRds);
+        document.getElementById('m_res_landed_total').innerText = "US$ " + fmt(landedCostUsd);
+
+        // CRONOGRAMA PROFORMA V8
+        let p1 = depositoUsd;
+        let p2 = (subasta + fees + brokerHonorariosTotal) - p1; if (p2 < 0) p2 = 0;
+        let p3 = inland + docsUsd;
+        let p4 = flete + (despachoRds / t) + (reparacionesRds / t);
+        let p5 = (placaRds / t);
+        let croTotal = p1 + p2 + p3 + p4 + p5;
+
+        document.getElementById('m_cro_p1').innerText = "US$ " + fmt(p1);
+        document.getElementById('m_cro_p2').innerText = "US$ " + fmt(p2);
+        document.getElementById('m_cro_p3').innerText = "US$ " + fmt(p3);
+        document.getElementById('m_cro_p4').innerText = "US$ " + fmt(p4);
+        document.getElementById('m_cro_p5').innerText = "US$ " + fmt(p5);
+        document.getElementById('m_cro_total').innerText = "US$ " + fmt(croTotal);
+    }
+
+    function toggleDocType() {
+        const isProforma = document.getElementById('doc_type').value === 'proforma';
+        document.getElementById('m-desglose-standard').style.display = isProforma ? 'none' : 'block';
+        document.getElementById('m-cronograma-proforma').style.display = isProforma ? 'block' : 'none';
+    }
+
+    async function decodificarVIN() {
+        const vin = document.getElementById('vin').value.trim();
+        window.currentCliente = cli; window.currentTratado = pAr === 0 ? 'Con Tratado (0%)' : 'Sin Tratado (10%)';
+        if (vin.length < 17) { showToast("Ingresa los 17 dígitos."); return; }
+        document.getElementById('m-btn-vin').innerText = "⏳";
+        try {
+            const res = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/${vin}?format=json`);
+            const data = await res.json();
+            const r = data.Results[0];
+            if (r && r.Make) {
+                showToast(`Vehículo: ${r.Make} ${r.Model} ${r.ModelYear}`);
+                calc();
+            } else { showToast("VIN no hallado."); }
+        } catch(e) { showToast("Error conexión VIN."); }
+        document.getElementById('m-btn-vin').innerText = "🔍";
+    }
+
+    async function calcularFleteORS() {
+        const zip = document.getElementById('zip_origen').value.trim();
+        if (!zip) { showToast("Ingresa el ZIP de la subasta"); return; }
+        document.getElementById('m-btn-grua').innerText = "⏳";
+        setTimeout(() => {
+            document.getElementById('grua_inland').value = 350;
+            calcCostos();
+            showToast("Grúa Estimada: US$ 350");
+            document.getElementById('m-btn-grua').innerText = "📍";
+        }, 800);
+    }
+
+    function enviarWhatsAppContextual() {
+        const isProforma = document.getElementById('doc_type').value === 'proforma';
+        const cli = document.getElementById('cliente').value.trim();
+        const veh = window.currentVehiculo || "Vehículo";
+        let txt = "";
+
+        if (isProforma) {
+            txt = `¡Hola ${cli}! 🚗\n\nAdjunto tu *Factura Proforma - Cronograma de Pagos* de *Next GB Auto Import*:\n\n`;
+            txt += `🚘 *Unidad:* ${veh}\n\n`;
+            txt += `*CRONOGRAMA DE PAGOS:* \n`;
+            txt += `1️⃣ *Depósito Seguridad:* ${document.getElementById('m_cro_p1').innerText}\n`;
+            txt += `2️⃣ *Balance Subasta (Factura/Broker & Honorarios):* ${document.getElementById('m_cro_p2').innerText}\n`;
+            txt += `3️⃣ *Logística Origen (Grúa/Taller/Docs):* ${document.getElementById('m_cro_p3').innerText}\n`;
+            txt += `4️⃣ *Aduana & Flete (Puerto Destino):* ${document.getElementById('m_cro_p4').innerText}\n`;
+            txt += `5️⃣ *Placa & Endoso:* ${document.getElementById('m_cro_p5').innerText}\n\n`;
+            txt += `🏁 *TOTAL INVERSIÓN (Landed):* ${document.getElementById('m_cro_total').innerText}`;
+        } else {
+            txt = `¡Hola ${cli}! 📊\n\nPresupuesto de Importación *Next GB Auto Import*:\n\n`;
+            txt += `🚘 *Unidad:* ${veh}\n`;
+            txt += `💵 *Subasta & Fees:* ${document.getElementById('m_res_subasta').innerText}\n`;
+            txt += `💼 *Fee Broker & Honorarios:* ${document.getElementById('m_res_broker_honorarios_total').innerText}\n`;
+            txt += `🚢 *Flete Marítimo:* ${document.getElementById('m_res_flete').innerText}\n`;
+            txt += `🏢 *Aduana DGA & Placa:* ${document.getElementById('m_res_aduana_rd').innerText}\n\n`;
+            txt += `📉 *LANDED COST TOTAL:* ${document.getElementById('m_res_landed_total').innerText}`;
+        }
+
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`, '_blank');
+    }
+
+    function imprimirPDF() {
+        window.print();
+    }
+
+    function guardarCotizacion() {
+        const name = prompt("Nombre para guardar esta cotización:");
+        if (!name) return;
+        const data = {};
+        document.querySelectorAll('input, select').forEach(e => data[e.id] = e.value);
+        let dbL = JSON.parse(localStorage.getItem('ng_m_saved') || '{}');
+        dbL[name] = data;
+        localStorage.setItem('ng_m_saved', JSON.stringify(dbL));
+        actualizarSelect();
+        showToast("Cotización guardada.");
+    }
+
+    function cargarCotizacion() {
+        const val = document.getElementById('select-cotizaciones').value;
+        if (!val) return;
+        let dbL = JSON.parse(localStorage.getItem('ng_m_saved') || '{}');
+        const data = dbL[val];
+        if (!data) return;
+        document.querySelectorAll('input, select').forEach(e => { if (data[e.id] !== undefined) e.value = data[e.id]; });
+        calcAuctionFees();
+        updateModels(); updateYears(); updateVersions();
+        calc(); calcCostos();
+        toggleDocType();
+        showToast(`Cargada: ${val}`);
+    }
+
+    function actualizarSelect() {
+        const sel = document.getElementById('select-cotizaciones');
+        sel.innerHTML = '<option value="">📂 Seleccionar cotización...</option>';
+        let dbL = JSON.parse(localStorage.getItem('ng_m_saved') || '{}');
+        Object.keys(dbL).forEach(k => sel.options.add(new Option(k, k)));
+    }
+
+    function limpiarCaso() {
+        document.querySelectorAll('input').forEach(i => { if (i.type === 'number') i.value = 0; else i.value = ''; });
+        document.getElementById('tasa').value = 60.60;
+        document.getElementById('flete').value = 910;
+        document.getElementById('flete_real').value = 910;
+        document.getElementById('pago_inicial_usd').value = 2000;
+        ['marca','modelo','anio','version'].forEach(id=>{const e=document.getElementById(id); e.innerHTML='<option value="">Seleccione...</option>'; e.value='';});
+        document.getElementById('pais_origen').value='--'; document.getElementById('specs-card').style.display='none';
+        calcAuctionFees(); calc(); calcCostos();
+        switchTab('subasta'); showToast("Pantalla limpia.");
+    }
+
+    function enviarWhatsAppProforma(){ document.getElementById('doc_type').value='proforma'; toggleDocType(); enviarWhatsAppContextual(); }
+    function enviarWhatsApp(){ document.getElementById('doc_type').value='cotizacion'; toggleDocType(); enviarWhatsAppContextual(); }
+    function enviarWhatsAppCostos(){ enviarWhatsAppContextual(); }
+    async function descargarResumenPNG(){
+        if(typeof html2canvas!=='function'){showToast('No se pudo cargar el exportador de imagen. Usa PDF.');return;}
+        showToast('Preparando imagen ejecutiva…'); const source=document.getElementById('m-printable-area'); if(!source)return;
+        const clone=source.cloneNode(true); clone.style.position='fixed'; clone.style.left='-100000px'; clone.style.top='0'; clone.style.width=Math.min(source.offsetWidth||600,900)+'px'; clone.style.background='#fff'; document.body.appendChild(clone);
+        try{ const canvas=await html2canvas(clone,{backgroundColor:'#fff',scale:Math.min(2.5,Math.max(2,devicePixelRatio||1)),useCORS:true}); const a=document.createElement('a'); const vin=(document.getElementById('vin').value||'').trim().slice(-6).toUpperCase(); a.download=`NEXT-GB-INVESTMENT-REPORT-${vin||'RESUMEN'}.png`; a.href=canvas.toDataURL('image/png'); a.click(); showToast('Imagen ejecutiva generada.'); }catch(e){console.error(e);showToast('No fue posible generar la imagen.');}finally{clone.remove();}
+    }
+
+    window.onload = function() {
+        if (localStorage.getItem('ng_theme_m') === 'light') document.body.classList.add('light-mode');
+        calcAuctionFees(); calc(); calcCostos();
+        actualizarSelect(); toggleDocType();
+        const savedCSV=localStorage.getItem('ng_m_csv_data');
+        if(savedCSV){
+            try { processCSV(savedCSV,localStorage.getItem('ng_m_csv_source')||'local'); }
+            catch(e){ console.error('Respaldo CSV inválido',e); }
+        }
+        cargarCSVDesdeGitHub(); fetchTasaDolar();
+    }
+</script>
+</body>
+</html>
